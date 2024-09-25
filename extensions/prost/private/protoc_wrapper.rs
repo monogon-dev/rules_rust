@@ -156,8 +156,13 @@ fn generate_lib_rs(
     is_tonic: bool,
     direct_dep_crate_names: Vec<String>,
     additional_content: String,
+    is_nostd: bool,
 ) -> String {
-    let mut contents = vec!["// @generated".to_string(), "".to_string()];
+    let mut contents = vec![
+        if is_nostd { "#![no_std]".to_string() } else { "".to_string() },
+        "// @generated".to_string(),
+        "".to_string(),
+    ];
     for crate_name in direct_dep_crate_names {
         contents.push(format!("pub use {crate_name};"));
     }
@@ -457,6 +462,9 @@ struct Args {
     /// Whether to generate tonic code.
     is_tonic: bool,
 
+    // Whether to put a no_std tag into the generated code.
+    is_nostd: bool,
+
     /// Extra arguments to pass to protoc.
     extra_args: Vec<String>,
 }
@@ -479,6 +487,7 @@ impl Args {
         let mut tonic_or_prost_opts = Vec::new();
         let mut direct_dep_crate_names = Vec::new();
         let mut is_tonic = false;
+        let mut is_nostd = false;
 
         let mut extra_args = Vec::new();
 
@@ -499,6 +508,10 @@ impl Args {
 
             if arg == "--is_tonic" {
                 is_tonic = true;
+                return;
+            }
+            if arg == "--is_nostd" {
+                is_nostd = true;
                 return;
             }
 
@@ -644,6 +657,7 @@ impl Args {
             proto_paths,
             direct_dep_crate_names,
             is_tonic,
+            is_nostd,
             label: label.unwrap(),
             extra_args,
         })
@@ -748,6 +762,7 @@ fn main() {
         proto_paths,
         direct_dep_crate_names,
         is_tonic,
+        is_nostd,
         extra_args,
     } = Args::parse().expect("Failed to parse args");
 
@@ -917,6 +932,7 @@ fn main() {
             is_tonic,
             direct_dep_crate_names,
             additional_content,
+            is_nostd,
         ),
     )
     .expect("Failed to write file.");

@@ -86,6 +86,9 @@ def _compile_proto(
     additional_args.add("--additional_srcs={}".format(",".join([f.path for f in all_additional_srcs.to_list()])))
     additional_args.add_all(prost_toolchain.prost_opts + prost_opts, format_each = "--prost_opt=%s")
 
+    if prost_toolchain.is_nostd:
+        additional_args.add("--is_nostd")
+
     if prost_toolchain.tonic_plugin:
         tonic_plugin = prost_toolchain.tonic_plugin[DefaultInfo].files_to_run
         additional_args.add(prost_toolchain.tonic_plugin_flag % tonic_plugin.executable.path)
@@ -442,6 +445,7 @@ def _rust_prost_toolchain_impl(ctx):
         tonic_plugin_flag = ctx.attr.tonic_plugin_flag,
         tonic_runtime = ctx.attr.tonic_runtime,
         include_transitive_deps = ctx.attr.include_transitive_deps,
+        is_nostd = ctx.attr.is_nostd,
     )]
 
 rust_prost_toolchain = rule(
@@ -496,6 +500,10 @@ rust_prost_toolchain = rule(
         "tonic_runtime": attr.label(
             doc = "The Tonic runtime crates to use.",
             providers = [[rust_common.crate_info], [rust_common.crate_group_info]],
+        ),
+        "is_nostd": attr.bool(
+            doc = "If a no_std tag should be put into the generated code.",
+            default = False,
         ),
     }, **proto_toolchains.if_legacy_toolchain({
         "_legacy_proto_toolchain": attr.label(
