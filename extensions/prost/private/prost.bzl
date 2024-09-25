@@ -164,7 +164,8 @@ def _compile_rust(
       A DepVariantInfo provider.
     """
     toolchain = ctx.toolchains["@rules_rust//rust:toolchain_type"]
-    output_hash = repr(hash(src.path + ".prost"))
+    src_path = src.path.replace(ctx.bin_dir.path, 'bin')
+    output_hash = repr(hash(src_path + ".prost"))
 
     lib_name = "{prefix}{name}-{lib_hash}{extension}".format(
         prefix = "lib",

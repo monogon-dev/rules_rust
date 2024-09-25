@@ -176,7 +176,7 @@ def get_lib_name_for_windows(lib):
 
     return libname
 
-def determine_output_hash(crate_root, label):
+def determine_output_hash(bin_dir, crate_root, label):
     """Generates a hash of the crate root file's path.
 
     Args:
@@ -187,8 +187,12 @@ def determine_output_hash(crate_root, label):
         str: A string representation of the hash.
     """
 
+    # Remove any unstable BuildConfiguration derived dir fragments to unify
+    # hashes between different configs.
+    crate_root_path = crate_root.path.replace(bin_dir.path, "bin")
+
     # Take the absolute value of hash() since it could be negative.
-    h = abs(hash(crate_root.path) + hash(repr(label)))
+    h = abs(hash(crate_root_path) + hash(repr(label)))
     return repr(h)
 
 def get_preferred_artifact(library_to_link, use_pic):

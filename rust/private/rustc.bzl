@@ -972,6 +972,10 @@ def construct_arguments(
     if remap_path_prefix != None:
         rustc_flags.add("--remap-path-prefix=${{pwd}}={}".format(remap_path_prefix))
 
+    # Replace unstable bindir path (based on ST-hash which is in turn based on
+    # build configuration) with a stable bin/ path.
+    rustc_flags.add("--remap-path-prefix={}=bin".format(ctx.bin_dir.path))
+
     emit_without_paths = []
     for kind in emit:
         if kind == "link" and crate_info.type == "bin" and crate_info.output != None:

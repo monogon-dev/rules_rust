@@ -138,7 +138,7 @@ def _clippy_aspect_impl(target, ctx):
         dep_info = dep_info,
         linkstamp_outs = linkstamp_outs,
         ambiguous_libs = ambiguous_libs,
-        output_hash = determine_output_hash(crate_info.root, ctx.label),
+        output_hash = determine_output_hash(ctx.bin_dir, crate_info.root, ctx.label),
         rust_flags = [],
         out_dir = out_dir,
         build_env_files = build_env_files,

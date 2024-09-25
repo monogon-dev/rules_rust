@@ -187,7 +187,7 @@ def _rust_proto_compile(protos, descriptor_sets, imports, crate_name, ctx, is_gr
     srcs.append(lib_rs)
 
     # And simulate rust_library behavior
-    output_hash = determine_output_hash(lib_rs, ctx.label)
+    output_hash = determine_output_hash(ctx.bin_dir, lib_rs, ctx.label)
     rust_lib = ctx.actions.declare_file("%s/lib%s-%s.rlib" % (
         output_dir,
         crate_name,

@@ -159,7 +159,7 @@ def _rust_library_common(ctx, crate_type):
     if crate_type in ["cdylib", "staticlib"]:
         output_hash = None
     else:
-        output_hash = determine_output_hash(crate_root, ctx.label)
+        output_hash = determine_output_hash(ctx.bin_dir, crate_root, ctx.label)
 
     rust_lib_name = determine_lib_name(
         crate_name,
@@ -321,7 +321,7 @@ def _rust_test_impl(ctx):
             )
         else:
             crate_name = crate.name
-            output_hash = determine_output_hash(crate.root, ctx.label)
+            output_hash = determine_output_hash(ctx.bin_dir, crate.root, ctx.label)
             output = ctx.actions.declare_file(
                 "test-%s/%s%s" % (
                     output_hash,
@@ -388,7 +388,7 @@ def _rust_test_impl(ctx):
                 ctx.label.name + toolchain.binary_ext,
             )
         else:
-            output_hash = determine_output_hash(crate_root, ctx.label)
+            output_hash = determine_output_hash(ctx.bin_dir, crate_root, ctx.label)
             output = ctx.actions.declare_file(
                 "test-%s/%s%s" % (
                     output_hash,
